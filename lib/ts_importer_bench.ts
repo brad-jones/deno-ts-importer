@@ -39,7 +39,8 @@ Deno.bench(
   "TsImporter.import() - simple module (cold cache)",
   async () => {
     await cleanup();
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: benchCacheDir,
     });
     await importer.import(simpleModuleUrl.href);
@@ -50,7 +51,8 @@ Deno.bench(
 Deno.bench(
   "TsImporter.import() - simple module (warm cache)",
   async (b) => {
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: benchCacheDir,
     });
     // Pre-warm the cache
@@ -65,7 +67,8 @@ Deno.bench(
 // Benchmark: Module with no imports
 Deno.bench("TsImporter.import() - module with no imports", async () => {
   await cleanup();
-  const importer = new TsImporter(importMap, {
+  const importer = new TsImporter({
+    importMap,
     cacheDir: benchCacheDir,
   });
   await importer.import(noImportsModuleUrl.href);
@@ -76,7 +79,8 @@ Deno.bench(
   "TsImporter.import() - nested dependencies (cold cache)",
   async () => {
     await cleanup();
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: benchCacheDir,
     });
     await importer.import(nestedModuleUrl.href);
@@ -87,7 +91,8 @@ Deno.bench(
 Deno.bench(
   "TsImporter.import() - nested dependencies (warm cache)",
   async (b) => {
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: benchCacheDir,
     });
     // Pre-warm the cache
@@ -102,7 +107,8 @@ Deno.bench(
 // Benchmark: Circular dependencies
 Deno.bench("TsImporter.import() - circular dependencies", async () => {
   await cleanup();
-  const importer = new TsImporter(importMap, {
+  const importer = new TsImporter({
+    importMap,
     cacheDir: benchCacheDir,
   });
   await importer.import(circularModuleUrl.href);
@@ -112,7 +118,8 @@ Deno.bench("TsImporter.import() - circular dependencies", async () => {
 Deno.bench(
   "TsImporter.import() - repeated imports (memory cache)",
   async (b) => {
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: benchCacheDir,
     });
     // First import to populate caches
@@ -145,7 +152,8 @@ Deno.bench("TsImporter.import() - large import map", async () => {
     },
   };
 
-  const importer = new TsImporter(largeImportMap, {
+  const importer = new TsImporter({
+    importMap: largeImportMap,
     cacheDir: benchCacheDir,
   });
   await importer.import(simpleModuleUrl.href);
@@ -164,7 +172,8 @@ Deno.bench("TsImporter.import() - scoped imports", async () => {
     },
   };
 
-  const importer = new TsImporter(scopedImportMap, {
+  const importer = new TsImporter({
+    importMap: scopedImportMap,
     cacheDir: benchCacheDir,
   });
   await importer.import(simpleModuleUrl.href);
@@ -205,7 +214,8 @@ Deno.bench({
   baseline: true,
   async fn() {
     await cleanup();
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: benchCacheDir,
     });
     await importer.import(noImportsModuleUrl.href);
@@ -228,7 +238,8 @@ Deno.bench({
   baseline: true,
   async fn() {
     await cleanup();
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: benchCacheDir,
     });
 

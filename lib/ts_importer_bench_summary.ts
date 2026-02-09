@@ -43,7 +43,8 @@ Deno.bench({
   group: "first-import",
   async fn() {
     await cleanup();
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: benchCacheDir,
     });
     await importer.import(simpleModuleUrl.href);
@@ -65,7 +66,8 @@ Deno.bench({
   name: "Cached Import: TsImporter (memory cache)",
   group: "cached-import",
   async fn(b) {
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: benchCacheDir,
     });
     await importer.import(simpleModuleUrl.href); // Warm up
@@ -95,7 +97,8 @@ Deno.bench({
   group: "complex-module",
   async fn() {
     await cleanup();
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: benchCacheDir,
     });
     await importer.import(nestedModuleUrl.href);
@@ -126,7 +129,8 @@ Deno.bench({
   group: "no-imports",
   async fn() {
     await cleanup();
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: benchCacheDir,
     });
     await importer.import(noImportsModuleUrl.href);

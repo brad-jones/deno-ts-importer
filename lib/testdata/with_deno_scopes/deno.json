@@ -1,0 +1,10 @@
+{
+  "imports": {
+    "@test/scoped-lib": "../scoped_lib.ts"
+  },
+  "scopes": {
+    "./nested/": {
+      "@test/scoped-dep": "../../scoped_dep.ts"
+    }
+  }
+}

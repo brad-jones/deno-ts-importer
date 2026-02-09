@@ -23,6 +23,7 @@
     ".": "./lib/mod.ts"
   },
   "imports": {
+    "@brad-jones/deno-config": "jsr:@brad-jones/deno-config@^1.0.0",
     "@cliffy/command": "jsr:@cliffy/command@^1.0.0-rc.8",
     "@core/unknownutil": "jsr:@core/unknownutil@^4.3.0",
     "@cspotcode/outdent": "jsr:@cspotcode/outdent@^0.8.0",

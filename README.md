@@ -60,9 +60,11 @@ import { toFileUrl } from "@std/path/to-file-url";
 
 // Create an importer with an import map
 const importer = new TsImporter({
-  imports: {
-    "lodash": "https://cdn.skypack.dev/lodash",
-    "@utils/": "./src/utils/",
+  importMap: {
+    imports: {
+      "lodash": "https://cdn.skypack.dev/lodash",
+      "@utils/": "./src/utils/",
+    },
   },
 });
 
@@ -82,7 +84,7 @@ The key use case for this package - importing TypeScript from compiled executabl
 import { TsImporter } from "@brad-jones/deno-ts-importer";
 
 // This works in both `deno run` and `deno compile` outputs
-const importer = new TsImporter({ imports: {} });
+const importer = new TsImporter({ importMap: { imports: {} } });
 const module = await importer.import<MyModule>("./my-module.ts");
 ```
 
@@ -101,7 +103,7 @@ Your compiled binary can now dynamically import TypeScript files!
 Fast type stripping using [@fcrozatier/type-strip](https://jsr.io/@fcrozatier/type-strip):
 
 ```typescript
-const importer = new TsImporter({ imports: {} }, {
+const importer = new TsImporter({
   tsTranspileMode: "strip", // or omit for default
 });
 ```
@@ -113,7 +115,7 @@ Full TypeScript compilation with custom compiler options:
 ```typescript
 import ts from "typescript";
 
-const importer = new TsImporter({ imports: {} }, {
+const importer = new TsImporter({
   tsTranspileMode: "transpile",
   tsCompilerOptions: {
     target: ts.ScriptTarget.ES2020,
@@ -127,7 +129,7 @@ const importer = new TsImporter({ imports: {} }, {
 No transformation - let Deno's runtime handle TypeScript:
 
 ```typescript
-const importer = new TsImporter({ imports: {} }, {
+const importer = new TsImporter({
   tsTranspileMode: "passthrough",
 });
 ```
@@ -141,7 +143,7 @@ DENO_TS_IMPORTER_TRANSPILE_MODE=passthrough deno run main.ts
 ### Custom Cache Directory
 
 ```typescript
-const importer = new TsImporter({ imports: {} }, {
+const importer = new TsImporter({
   // Absolute path
   cacheDir: "/tmp/my-cache",
   // Or relative path (resolved from CWD)
@@ -153,12 +155,80 @@ const importer = new TsImporter({ imports: {} }, {
 
 ```typescript
 const importer = new TsImporter({
-  imports: {
-    "react": "https://esm.sh/react@18",
-  },
-  scopes: {
-    "https://esm.sh/": {
+  importMap: {
+    imports: {
+      "react": "https://esm.sh/react@18",
+    },
+    scopes: {
+      "https://esm.sh/": {
       "react": "https://esm.sh/react@17",
+    },
+  },
+});
+```
+
+### Auto-Discovery of Import Maps
+
+By default, `TsImporter` automatically discovers and merges import maps from `deno.json` or `deno.jsonc` files located in the same directory as the imported module. This is especially useful when working with modules that have their own configuration.
+
+```typescript
+const importer = new TsImporter({
+  // autoDiscoverImportMap defaults to true
+  importMap: {
+    imports: {
+      "@std/": "https://deno.land/std@0.224.0/",
+    },
+  },
+});
+
+// If ./my-module.ts has a deno.json with imports, they will be merged
+const module = await importer.import("./my-module.ts");
+```
+
+**Example:** If you have a module with its own `deno.json`:
+
+```typescript
+// ./packages/utils/deno.json
+{
+  "imports": {
+    "lodash": "https://cdn.skypack.dev/lodash",
+    "@utils/": "./src/"
+  }
+}
+
+// ./packages/utils/mod.ts
+import _ from "lodash"; // Resolved via local deno.json
+import { helper } from "@utils/helper.ts"; // Also resolved locally
+```
+
+When you import this module:
+
+```typescript
+import { TsImporter } from "@brad-jones/deno-ts-importer";
+
+const importer = new TsImporter({
+  importMap: {
+    imports: {
+      "@std/": "https://deno.land/std@0.224.0/",
+    },
+  },
+});
+
+// The imports from packages/utils/deno.json are automatically discovered
+// and merged with your configured import map
+const utils = await importer.import("./packages/utils/mod.ts");
+```
+
+The discovered import maps are merged with priority given to the local `deno.json` configuration, allowing modules to define their own dependencies without requiring changes to your main import map.
+
+**Disable auto-discovery:**
+
+```typescript
+const importer = new TsImporter({
+  autoDiscoverImportMap: false, // Only use the configured import map
+  importMap: {
+    imports: {
+      "lodash": "https://cdn.skypack.dev/lodash",
     },
   },
 });
@@ -173,13 +243,12 @@ The main class for processing modules with import maps.
 #### Constructor
 
 ```typescript
-constructor(importMap: ImportMap, options?: TsImporterOptions)
+constructor(options?: TsImporterOptions)
 ```
 
 **Parameters:**
 
-- `importMap`: An import map configuration object with `imports` and optional `scopes`
-- `options`: Optional configuration object
+- `options`: Optional configuration object including import map and other settings
 
 #### `import<T>(specifier: string): Promise<T>`
 
@@ -198,6 +267,11 @@ Configuration options for `TsImporter`:
 ```typescript
 type TsImporterOptions = {
   /**
+   * Optional import map configuration.
+   */
+  importMap?: ImportMap;
+
+  /**
    * Custom cache directory path.
    * Can be absolute or relative (resolved to CWD).
    * Defaults to Deno's cache directory under "import_map_importer".
@@ -210,6 +284,16 @@ type TsImporterOptions = {
    * @default false
    */
   clearDenoCache?: boolean;
+
+  /**
+   * Whether to automatically discover and merge import maps from deno.json/deno.jsonc
+   * files when importing local modules.
+   *
+   * When enabled, the importer will look for deno.json files in the same directory
+   * as the imported module and merge their import maps with the configured import map.
+   * @default true
+   */
+  autoDiscoverImportMap?: boolean;
 
   /**
    * TypeScript transpilation mode.
@@ -281,7 +365,7 @@ const module = await import("./my-module.ts");
 ```typescript
 import { TsImporter } from "@brad-jones/deno-ts-importer";
 
-const importer = new TsImporter({ imports: {} });
+const importer = new TsImporter({ importMap: { imports: {} } });
 // This works in both `deno run` AND compiled binaries!
 const module = await importer.import("./my-module.ts");
 ```

@@ -45,7 +45,8 @@ Deno.bench({
   group: "no-imports-cold",
   async fn() {
     await cleanup();
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: benchCacheDir,
     });
     await importer.import(noImportsModuleUrl.href);
@@ -67,7 +68,8 @@ Deno.bench({
   name: "Cached Module - TsImporter",
   group: "cached",
   async fn(b) {
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: benchCacheDir,
     });
     await importer.import(noImportsModuleUrl.href); // Warm up
@@ -101,7 +103,8 @@ Deno.bench({
   group: "transform",
   async fn() {
     await cleanup();
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: benchCacheDir,
     });
     await importer.import(simpleModuleUrl.href);
@@ -113,7 +116,8 @@ Deno.bench({
   group: "transform",
   async fn() {
     await cleanup();
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: benchCacheDir,
     });
     await importer.import(nestedModuleUrl.href);
@@ -126,14 +130,16 @@ Deno.bench({
   group: "disk-cache",
   async fn(b) {
     // First, populate the disk cache
-    const setupImporter = new TsImporter(importMap, {
+    const setupImporter = new TsImporter({
+      importMap,
       cacheDir: benchCacheDir,
     });
     await setupImporter.import(simpleModuleUrl.href);
 
     b.start();
     // Simulate new process by creating new importer
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: benchCacheDir,
     });
     await importer.import(simpleModuleUrl.href);
@@ -147,7 +153,8 @@ Deno.bench({
   group: "memory",
   async fn() {
     await cleanup();
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: benchCacheDir,
     });
 

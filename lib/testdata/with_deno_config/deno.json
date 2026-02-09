@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "@test/helper": "../config_helper.ts",
+    "@test/utility": "../config_utility.ts"
+  }
+}

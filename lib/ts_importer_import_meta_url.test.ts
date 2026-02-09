@@ -29,7 +29,8 @@ describe("TsImporter - import.meta.url replacement", () => {
       imports: {},
     };
 
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: "./.test_cache_meta",
     });
 
@@ -91,7 +92,8 @@ export const libUrl = import.meta.url;
         },
       };
 
-      const importer = new TsImporter(importMap, {
+      const importer = new TsImporter({
+        importMap,
         cacheDir: "./.test_cache_meta",
       });
 
@@ -161,7 +163,8 @@ export const allUrls = {
         },
       };
 
-      const importer = new TsImporter(importMap, {
+      const importer = new TsImporter({
+        importMap,
         cacheDir: "./.test_cache_meta",
       });
 
@@ -223,7 +226,8 @@ export const urls = [import.meta.url, import.meta.url];
 
     try {
       const importMap: ImportMap = { imports: {} };
-      const importer = new TsImporter(importMap, {
+      const importer = new TsImporter({
+        importMap,
         cacheDir: "./.test_cache_meta",
       });
 
@@ -261,7 +265,8 @@ export const urls = [import.meta.url, import.meta.url];
       imports: {},
     };
 
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: "./.test_cache_meta",
     });
 
@@ -344,7 +349,8 @@ export function getValue() {
         },
       };
 
-      const importer = new TsImporter(importMap, {
+      const importer = new TsImporter({
+        importMap,
         cacheDir: "./.test_cache_meta",
       });
 
@@ -392,7 +398,8 @@ export function getValue() {
       },
     };
 
-    const importer = new TsImporter(importMap, {
+    const importer = new TsImporter({
+      importMap,
       cacheDir: "./.test_cache_meta",
     });
 
@@ -465,7 +472,8 @@ export const libResolved = import.meta.resolve("./helper.ts");
         },
       };
 
-      const importer = new TsImporter(importMap, {
+      const importer = new TsImporter({
+        importMap,
         cacheDir: "./.test_cache_meta",
       });
 

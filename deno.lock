@@ -1,6 +1,9 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@brad-jones/deno-config@1": "1.0.0",
+    "jsr:@brad-jones/deno-net-container@0.4": "0.4.0",
+    "jsr:@brad-jones/jsr-dynamic-imports@~0.1.1": "0.1.2",
     "jsr:@cliffy/command@^1.0.0-rc.8": "1.0.0-rc.8",
     "jsr:@cliffy/flags@1.0.0-rc.8": "1.0.0-rc.8",
     "jsr:@cliffy/internal@1.0.0-rc.8": "1.0.0-rc.8",
@@ -38,6 +41,7 @@
     "jsr:@std/fs@0.223": "0.223.0",
     "jsr:@std/fs@1": "1.0.22",
     "jsr:@std/fs@^1.0.1": "1.0.22",
+    "jsr:@std/fs@^1.0.19": "1.0.22",
     "jsr:@std/fs@^1.0.22": "1.0.22",
     "jsr:@std/internal@^1.0.10": "1.0.12",
     "jsr:@std/internal@^1.0.12": "1.0.12",
@@ -48,9 +52,12 @@
     "jsr:@std/path@^1.0.1": "1.1.4",
     "jsr:@std/path@^1.1.0": "1.1.4",
     "jsr:@std/path@^1.1.1": "1.1.4",
+    "jsr:@std/path@^1.1.2": "1.1.4",
     "jsr:@std/path@^1.1.4": "1.1.4",
     "jsr:@std/testing@^1.0.14": "1.0.17",
     "jsr:@std/text@~1.0.7": "1.0.17",
+    "jsr:@zod/zod@^4.1.12": "4.3.6",
+    "npm:@brad-jones/jsr-dynamic-imports@0.1.2": "0.1.2",
     "npm:esbuild@~0.25.5": "0.25.12",
     "npm:esbuild@~0.27.3": "0.27.3",
     "npm:rolldown@1.0.0-beta.18": "1.0.0-beta.18",
@@ -59,6 +66,27 @@
     "npm:typescript@^5.9.3": "5.9.3"
   },
   "jsr": {
+    "@brad-jones/deno-config@1.0.0": {
+      "integrity": "f9164661d3c2b2e5e5dcf195b2baff96d2351f41b9c2e0ff243d39193842a69e",
+      "dependencies": [
+        "jsr:@brad-jones/deno-net-container",
+        "jsr:@std/path@^1.1.2",
+        "jsr:@zod/zod"
+      ]
+    },
+    "@brad-jones/deno-net-container@0.4.0": {
+      "integrity": "fc6b649096e9980d694bdbc6731e31a2fcfbac71b0d11fd9a15b5e8a78cc3595",
+      "dependencies": [
+        "jsr:@brad-jones/jsr-dynamic-imports@~0.1.1",
+        "jsr:@std/fs@^1.0.19"
+      ]
+    },
+    "@brad-jones/jsr-dynamic-imports@0.1.2": {
+      "integrity": "5e1da0bffe3ed4b8e9ca2cd2bb35c4508f94a711c77b1190f0190a29347b4b53",
+      "dependencies": [
+        "npm:@brad-jones/jsr-dynamic-imports@0.1.2"
+      ]
+    },
     "@cliffy/command@1.0.0-rc.8": {
       "integrity": "758147790797c74a707e5294cc7285df665422a13d2a483437092ffce40b5557",
       "dependencies": [
@@ -255,9 +283,15 @@
     },
     "@std/text@1.0.17": {
       "integrity": "4b2c4ef67ae5b6c1dfd447c81c83a43718f52e3c7e748d8b33f694aba9895f95"
+    },
+    "@zod/zod@4.3.6": {
+      "integrity": "7144e5e11f8ffc3cf6e2fca624f6597a8762898aac9868cc8938e9398b96ffe4"
     }
   },
   "npm": {
+    "@brad-jones/jsr-dynamic-imports@0.1.2": {
+      "integrity": "sha512-hGH7/BVS1gRxj3H8rsHEs+Qe+kWrsfgXz2yQKXlXE/OniD+/CrBdCbUGaE/USwjQDkdeo8BHXVZhu1sKfQ5YuA=="
+    },
     "@emnapi/core@1.8.1": {
       "integrity": "sha512-AvT9QFpxK0Zd8J0jopedNm+w/2fIzvtPKPjqyw9jwvBaReTTqPBk9Hixaz7KbjimP+QNz605/XnjFcDAL2pqBg==",
       "dependencies": [
@@ -829,6 +863,7 @@
   },
   "workspace": {
     "dependencies": [
+      "jsr:@brad-jones/deno-config@1",
       "jsr:@cliffy/command@^1.0.0-rc.8",
       "jsr:@core/unknownutil@^4.3.0",
       "jsr:@cspotcode/outdent@0.8",
