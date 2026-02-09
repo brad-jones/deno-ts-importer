@@ -368,6 +368,8 @@ export class TsImporter {
 
   // Optimized module content reading
   async #readModuleContent(moduleUrl: URL): Promise<string> {
+    if (Deno.env.get("DENO_TS_IMPORTER_DEBUG")) console.log(`Reading module content from ${moduleUrl.href}`);
+
     if (moduleUrl.protocol === "file:") {
       return Deno.readTextFile(fromFileUrl(moduleUrl));
     }
