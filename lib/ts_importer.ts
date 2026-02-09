@@ -1,10 +1,11 @@
-import { readDenoConfigFile } from "@brad-jones/deno-config";
+import { findDenoConfigFile } from "@brad-jones/deno-config";
 import { ensureDir } from "@std/fs";
 import { isAbsolute, join } from "@std/path";
 import { fromFileUrl } from "@std/path/from-file-url";
 import type ts from "typescript";
 import { getCachePath, getDefaultDenoCacheDir, getDenoCacheFilePath, getDenoCacheMetadataPath } from "./cache.ts";
 import type { ImportMap } from "./import_map.ts";
+import { loadImportMap } from "./load_import_map.ts";
 import { createOriginalUrlComment, replaceImportMeta } from "./replace_import_meta.ts";
 import { replaceImports } from "./replace_imports.ts";
 import { transpileTypeScript } from "./ts_transpiler.ts";
@@ -227,8 +228,9 @@ export class TsImporter {
     // Discover import map from deno.jsonc if importing from a local file and no import map provided
     let effectiveImportMap = importMap ?? this.#importMap;
     if (this.#autoDiscoverImportMap && !importMap && url.protocol === "file:") {
-      const config = await readDenoConfigFile(fromFileUrl(url));
-      if (config) {
+      const configFilePath = await findDenoConfigFile(fromFileUrl(url));
+      if (configFilePath) {
+        const config = await loadImportMap(configFilePath);
         effectiveImportMap = {
           imports: { ...effectiveImportMap?.imports, ...config?.imports ?? {} },
           scopes: { ...effectiveImportMap?.scopes, ...config?.scopes ?? {} },
