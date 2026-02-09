@@ -136,7 +136,7 @@ export class TsImporter {
       this.#cacheDir = isAbsolute(options.cacheDir) ? options.cacheDir : join(Deno.cwd(), options.cacheDir);
     } else {
       // Default to Deno's cache directory for easier cache management
-      this.#cacheDir = join(getDefaultDenoCacheDir(), "import_map_importer");
+      this.#cacheDir = join(getDefaultDenoCacheDir(), "brad_jones_ts_importer");
     }
 
     // Set cache clearing option
