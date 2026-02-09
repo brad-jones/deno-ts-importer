@@ -1,0 +1,87 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+# https://taskfile.dev
+version: 3
+
+dotenv: [".env"]
+set: [pipefail]
+shopt: [globstar]
+
+tasks:
+  init:
+    desc: Setup dev env (anything that pixi can't install and setup for us).
+    cmds:
+      - lefthook install -f
+      - git config pull.rebase true
+      - git config core.editor "code --wait"
+      - git config commit.template "$PWD/.gitmsgtpl"
+      - deno install {{if .CI}}--frozen{{end}}
+      - "{{if .CI}}git config --global user.name github-actions[bot]{{end}}"
+      - "{{if .CI}}git config --global user.email github-actions[bot]@users.noreply.github.com{{end}}"
+
+  lint:
+    desc: Lints our code to ensure it remains of a high quality.
+    cmds:
+      - dprint check
+      - deno lint
+      - deno publish --dry-run --allow-dirty
+
+  fmt:
+    desc: Formats our code to ensure it looks consistent.
+    cmds:
+      - dprint fmt
+
+  test:
+    desc: Executes our lib test suite
+    dir: ./lib
+    cmds:
+      - deno test -A --parallel --shuffle --doc --coverage=.coverage --coverage-raw-data-only ./**/*.test.ts
+      - deno coverage .coverage --exclude=testdata/ --exclude=.test_cache/ --exclude=.test_cache_meta/
+      - deno coverage .coverage --exclude=testdata/ --exclude=.test_cache/ --exclude=.test_cache_meta/ --html
+
+  test:e2e:
+    desc: Executes our end to end tests to ensure the library works as expected in a real world scenario.
+    cmds:
+      - deno test -A ./tests/e2e.test.ts
+
+  bench:
+    desc: Runs our benchmarks to ensure we don't regress on performance.
+    dir: ./lib
+    cmds:
+      - deno bench -A ./**/*_bench*.ts
+
+  cog:
+    desc: Executes 'cog bump' which orchestrates the release process.
+    deps:
+      - init
+    preconditions:
+      - '[ "$CI" = "true" ]'
+    cmds:
+      - deno run -qA ./scripts/try-cog-bump.ts
+
+  package:
+    desc: This is triggered by cog as a pre_bump_hook to generate all the final publishable artifacts
+    deps:
+      - lint
+      - test
+      - test:e2e
+    requires:
+      vars:
+        - VERSION
+    cmds:
+      - >-
+        echo '
+          const config = JSON.parse(Deno.readTextFileSync("deno.json"));
+          config.version = "{{.VERSION}}";
+          Deno.writeTextFileSync("deno.json", JSON.stringify(config, null, 2));
+        ' | deno run -A -
+
+  publish:
+    desc: This is triggered by cog as a post_bump_hook to publish all the final publishable artifacts
+    requires:
+      vars:
+        - VERSION
+    cmds:
+      - deno publish
+      - git push && git push --tags
+      - cog changelog --at v{{.VERSION}} > GITHUB_CHANGELOG.md
+      - gh release create v{{.VERSION}} -F GITHUB_CHANGELOG.md
