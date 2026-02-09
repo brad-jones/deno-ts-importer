@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [v0.2.3](https://github.com/brad-jones/deno-ts-importer/compare/86bbabe3504d8737dcb850f2a599271054d4cb7c..v0.2.3) - 2026-02-09
+#### Miscellaneous Chores
+- add more debug logging - ([86bbabe](https://github.com/brad-jones/deno-ts-importer/commit/86bbabe3504d8737dcb850f2a599271054d4cb7c)) - [@brad-jones](https://github.com/brad-jones)
+
+- - -
+
 ## [v0.2.2](https://github.com/brad-jones/deno-ts-importer/compare/9471fafef7b36456d20e7e92f510ccbbff0a3bb8..v0.2.2) - 2026-02-09
 #### Miscellaneous Chores
 - add some debug logging - ([9471faf](https://github.com/brad-jones/deno-ts-importer/commit/9471fafef7b36456d20e7e92f510ccbbff0a3bb8)) - [@brad-jones](https://github.com/brad-jones)
