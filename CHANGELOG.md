@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [v0.2.0](https://github.com/brad-jones/deno-ts-importer/compare/54b4a18a16a0730f3afaeab9cb3236ec0dbb7603..v0.2.0) - 2026-02-09
+#### Features
+- added automatic import map discovery - ([e31b2c4](https://github.com/brad-jones/deno-ts-importer/commit/e31b2c4f27d946b3a0bbd4791cf7675c60b70aac)) - [@brad-jones](https://github.com/brad-jones)
+#### Refactoring
+- change default cache dir to not conflict with the original package - ([54b4a18](https://github.com/brad-jones/deno-ts-importer/commit/54b4a18a16a0730f3afaeab9cb3236ec0dbb7603)) - [@brad-jones](https://github.com/brad-jones)
+
+- - -
+
 ## [v0.1.0](https://github.com/brad-jones/deno-ts-importer/compare/a56eb3a4b88b276062a04bb04932f6aa631465f2..v0.1.0) - 2026-02-09
 #### Features
 - initial commit - ([a56eb3a](https://github.com/brad-jones/deno-ts-importer/commit/a56eb3a4b88b276062a04bb04932f6aa631465f2)) - [@brad-jones](https://github.com/brad-jones)
