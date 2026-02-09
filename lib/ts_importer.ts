@@ -239,6 +239,7 @@ export class TsImporter {
     }
 
     const transformedUrl = await this.#transformModule(url, effectiveImportMap);
+    if (Deno.env.get("DENO_TS_IMPORTER_DEBUG")) console.log({ specifier, url, transformedUrl, effectiveImportMap });
     const module = await import(transformedUrl) as T;
 
     this.#cache.set(specifier, module);
