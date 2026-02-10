@@ -1,3 +1,18 @@
+_So I thought I could solve this: <https://github.com/denoland/deno/issues/18327> Apparently not :(_
+
+I'm going to leave this here in case I get some time to look at this again but basically this is broken. DO NOT USE!
+
+Perhaps through some combination of @deno/graph, @deno/cache-dir & @deno/loader
+along with TypeScript transpilation, either using `ts.transpileModule` or something
+like @fcrozatier/type-strip we might be able to dynamically import TypeScript code
+from compiled deno binaries.
+
+But it's not going to be the simple implementation I was initially hoping for when I forked the original deno-import-map-importer.
+
+For now I'm just not going to compile my CLI tool that dynamically imports other users TypeScript modules.
+At least not with `deno compile`, instead I'll provide the usual `deno install` or `deno x` workflows.
+Along with a Go wrapper that embeds the real deno binary and then just executes `deno run ...`.
+
 <div align="center">
 
 ### 🚀 deno-ts-importer

@@ -239,7 +239,7 @@ export class TsImporter {
     }
 
     const transformedUrl = await this.#transformModule(url, effectiveImportMap);
-    if (Deno.env.get("DENO_TS_IMPORTER_DEBUG")) console.log({ specifier, url, transformedUrl, effectiveImportMap });
+    console.log({ specifier, url, transformedUrl, effectiveImportMap });
     const module = await import(transformedUrl) as T;
 
     this.#cache.set(specifier, module);
@@ -369,7 +369,7 @@ export class TsImporter {
 
   // Optimized module content reading
   async #readModuleContent(moduleUrl: URL): Promise<string> {
-    if (Deno.env.get("DENO_TS_IMPORTER_DEBUG")) console.log(`Reading module content from ${moduleUrl.href}`);
+    console.log(`Reading module content from ${moduleUrl.href}`);
 
     if (moduleUrl.protocol === "file:") {
       return Deno.readTextFile(fromFileUrl(moduleUrl));
@@ -475,7 +475,9 @@ export class TsImporter {
     // Process all transformed specifiers
     for (const [, transformedSpecifier] of originalToTransformedSpecifiers) {
       const shouldProcess = this.#isRelativeOrFileUrl(transformedSpecifier) ||
-        this.#isHttpUrl(transformedSpecifier);
+        this.#isHttpUrl(transformedSpecifier) ||
+        this.#isJsr(transformedSpecifier) ||
+        this.#isNpm(transformedSpecifier);
 
       if (shouldProcess) {
         promises.push(
@@ -539,6 +541,14 @@ export class TsImporter {
 
   #isHttpUrl(specifier: string): boolean {
     return specifier.startsWith("http://") || specifier.startsWith("https://");
+  }
+
+  #isJsr(specifier: string): boolean {
+    return specifier.startsWith("jsr:");
+  }
+
+  #isNpm(specifier: string): boolean {
+    return specifier.startsWith("npm:");
   }
 
   // Clear Deno's module cache for a specific URL

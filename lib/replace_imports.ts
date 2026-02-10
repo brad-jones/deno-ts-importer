@@ -1,4 +1,7 @@
+import { createCache } from "@deno/cache-dir";
 import { createGraph, init } from "@deno/graph";
+import { RequestedModuleType, ResolutionMode, Workspace } from "@deno/loader";
+import { cacheInfo } from "./cache_info.ts";
 import { findMissingImports, type Replacement } from "./find_missing_imports.ts";
 
 // Module-level initialization state
@@ -66,7 +69,7 @@ export async function replaceImports(
     return sourceCode;
   }
 
-  const { replacements, specifierReplacements } = collectReplacements(
+  const { replacements, specifierReplacements } = await collectReplacements(
     targetModule.dependencies,
     replacer,
   );
@@ -104,10 +107,13 @@ function createModuleLoader(specifier: string, sourceCode: string) {
   };
 }
 
+const denoLoader = await new Workspace({}).createLoader();
+const denoCache = createCache();
+
 /**
  * Collects all replacements from module dependencies.
  */
-function collectReplacements(
+async function collectReplacements(
   dependencies: Array<
     {
       specifier: string;
@@ -136,9 +142,23 @@ function collectReplacements(
       continue;
     }
 
-    const newSpecifier = replacer(dependency.specifier);
-    if (dependency.specifier === newSpecifier) {
-      continue;
+    let newSpecifier: string;
+    if (isJsrOrNpmSpecifier(dependency.specifier)) {
+      newSpecifier = await denoLoader.resolve(dependency.specifier, undefined, ResolutionMode.Import);
+      if (!newSpecifier.startsWith("file://")) {
+        // NB: The LoadResponse returned here does include the actual code as a
+        // byte array so worst case we could just write that to our own location
+        // but that seems wasteful. Unfortunately the LoadResponse does not include
+        // the local file path to the cached module. At least for JSR modules,
+        // the specifier remains as a HTTPs url.
+        await denoLoader.load(newSpecifier, RequestedModuleType.Default);
+        newSpecifier = await cacheInfo(newSpecifier);
+      }
+    } else {
+      newSpecifier = replacer(dependency.specifier);
+      if (dependency.specifier === newSpecifier) {
+        continue;
+      }
     }
 
     specifierReplacements.set(dependency.specifier, newSpecifier);
@@ -212,5 +232,9 @@ function applyReplacements(
  * Checks if the specifier is a remote URL.
  */
 function isRemoteSpecifier(specifier: string): boolean {
-  return /^(https?:|data:|npm:|jsr:)/i.test(specifier);
+  return /^(https?:|data:)/i.test(specifier);
+}
+
+function isJsrOrNpmSpecifier(specifier: string): boolean {
+  return /^(jsr:|npm:)/i.test(specifier);
 }
